@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BogoCount</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_game">GameActivity</string>
+
+    <string name="banner">Banner</string>
+    <string name="game_over">Game Over</string>
+    <string name="game_win">Game Win</string>
+</resources>
