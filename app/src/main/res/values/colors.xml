@@ -2,11 +2,10 @@
 <resources>
     <color name="black">#000000</color>
 
-    <color name="card_background_stroke">#ff86e4ae</color>
-    <color name="card_background_solid">#ff486398</color>
+    <color name="card_background_stroke">#d7eef6</color>
+    <color name="card_background_solid">#aedef4</color>
     <color name="card_foreground_stroke">#ff86e4ae</color>
     <color name="card_foreground_solid">#ff749ef4</color>
 
-    <color name="card_text_color">#ff784035</color>
 
 </resources>

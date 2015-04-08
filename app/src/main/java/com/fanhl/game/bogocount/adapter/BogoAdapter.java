@@ -41,7 +41,9 @@ public class BogoAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) convertView = new CardView(context);
 
-        ((CardView) convertView).setData(list.get(position));
+        CardView cardView = (CardView) convertView;
+        cardView.setData(list.get(position));
+        cardView.notifyDirectionChanged();
 
         return convertView;
     }

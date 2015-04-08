@@ -1,11 +1,13 @@
 package com.fanhl.game.bogocount.ui;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.fanhl.game.bogocount.R;
 import com.fanhl.game.bogocount.adapter.BogoAdapter;
@@ -16,6 +18,8 @@ import com.fanhl.game.bogocount.widget.CardView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class GameActivity extends ActionBarActivity {
     private BogoView bogoView;
@@ -48,16 +52,47 @@ public class GameActivity extends ActionBarActivity {
     }
 
     private void gameStart() {
+        //初始化bogoView
+        bogoView.initFlag = false;
+        bogoView.setVisibility(View.INVISIBLE);
+        bogoView.setVisibility(View.VISIBLE);
+
+        //一个长时间的暂停
 
         //动画 img的动画
-//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.bogo_show);
-//        imageView.setAnimation(animation);
-//        imageView.animate();
+        startBogoImgAnimate();
+    }
 
-        //动画  翻成背面
+    private void startBogoImgAnimate() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(imageView, "translationX", 1000, 0, 0, 0, 0, 0, 1000);
+        animator.setStartDelay(3000);
+        animator.setDuration(2000);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                imageView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                imageView.setVisibility(View.GONE);
+                //动画  翻成背面
+                startCardsTurnBack();
+            }
+        });
+        animator.start();
+
+    }
+
+    private void startCardsTurnBack() {
         bogoAdapter.setDirection(Card.TYPE_BACK);
+        bogoAdapter.notifyDataSetChanged();
 
+        startClickable();
+    }
 
+    private void startClickable() {
+        //可以开始操作了
         setClickable();
     }
 
@@ -72,23 +107,78 @@ public class GameActivity extends ActionBarActivity {
 
                 //动画
                 data.setType(Card.TYPE_FORE);
-//                cardView.invalidate();
+                cardView.notifyDirectionChanged();
 
                 if (game.validate(data)) {
                     if (game.isWin()) {
                         game.win();
-                        Toast.makeText(GameActivity.this, R.string.game_win, Toast.LENGTH_SHORT).show();
                         bogoView.setOnItemClickListener(null);
+                        showGameWinDialog();
                     }
                 } else {
                     game.gameOver();
+
+                    bogoAdapter.setDirection(Card.TYPE_FORE);
+                    bogoAdapter.notifyDataSetChanged();
+
+
                     bogoView.setOnItemClickListener(null);
-                    Toast.makeText(GameActivity.this, R.string.game_over, Toast.LENGTH_SHORT).show();
+                    showGameOverDialog();
                 }
 
                 view.setClickable(false);
             }
         });
+    }
+
+    private void showGameWinDialog() {
+        new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText(gStr(R.string.game_over))
+                .setCancelText(gStr(R.string.back))
+                .setConfirmText(gStr(R.string.again))
+                .showCancelButton(true)
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        finish();
+                    }
+                })
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        game.restart();
+                        gameStart();
+                        sDialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void showGameOverDialog() {
+        new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE)
+                .setTitleText(gStr(R.string.game_over))
+                .setCancelText(gStr(R.string.back))
+                .setConfirmText(gStr(R.string.again))
+                .showCancelButton(true)
+                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        finish();
+                    }
+                })
+                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sDialog) {
+                        game.restart();
+                        gameStart();
+                        sDialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private String gStr(int id) {
+        return getResources().getString(id);
     }
 
 }

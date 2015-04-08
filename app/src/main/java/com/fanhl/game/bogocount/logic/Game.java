@@ -23,6 +23,10 @@ public class Game {
         currentIndex = 0;
     }
 
+    public void restart() {
+        currentIndex = 0;
+    }
+
     public boolean validate(Card data) {
         int i = list.indexOf(data);
         if (i == currentIndex) {
@@ -34,7 +38,7 @@ public class Game {
     }
 
     public boolean isWin() {
-        return currentIndex == list.size() - 1;
+        return currentIndex == list.size();
     }
 
     public void win() {

@@ -1,11 +1,11 @@
 package com.fanhl.game.bogocount.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.fanhl.game.bogocount.adapter.BogoAdapter;
 import com.fanhl.game.bogocount.model.Card;
@@ -24,7 +24,7 @@ public class BogoView extends GridView {
 
     int[][] positions;
 
-    boolean initFlag = false;
+    public boolean initFlag = false;
 
     public BogoView(Context context) {
         super(context);
@@ -54,14 +54,12 @@ public class BogoView extends GridView {
     }
 
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-
-        Log.d(TAG, "l:" + left + " t:" + top + " r:" + right + " b" + bottom);
+    protected void layoutChildren() {
+        super.layoutChildren();
 
         int width = getWidth();
         int height = getHeight();
-        Log.d(TAG, "onLayout width:" + width + " height:" + height);
+//        Log.d(TAG, "onLayout width:" + width + " height:" + height);
 
         int childCount = getChildCount();
 
@@ -92,18 +90,55 @@ public class BogoView extends GridView {
 
             child.layout(cl, ct, cr, cb);
 
-            Log.d(TAG, "onLayout child:" + i
-                    + " left:" + cl + " top:" + ct + " right:" + cr + " bottom:" + cb);
+//            Log.d(TAG, "onLayout child:" + i
+//                    + " left:" + cl + " top:" + ct + " right:" + cr + " bottom:" + cb);
 
         }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
     }
 
     private void intPositions(int count, int width, int height, int childWidth, int childHeight) {
         positions = new int[count][2];
 
-        for (int i = 0; i < count; i++) {
-            positions[i][0] = mRandom.nextInt(width);
-            positions[i][1] = mRandom.nextInt(height);
+        int deadCycleCount = 0;
+
+        int i = 0;
+        //FIXME 多层循环 需要优化代码
+        while (i < count) {
+            int x = mRandom.nextInt(width);
+            int y = mRandom.nextInt(height);
+
+            boolean overlapFlag = false;//重叠flag
+
+            for (int j = 0; j < i; j++) {
+                int x2 = positions[j][0];
+                int y2 = positions[j][1];
+
+                //重叠判断
+                if (Math.abs(x - x2) < childWidth && Math.abs(y - y2) < childHeight) {
+                    overlapFlag = true;
+                    break;
+                }
+            }
+
+            if (!overlapFlag) {
+                positions[i][0] = x;
+                positions[i][1] = y;
+                i++;
+            }
+
+            if (deadCycleCount++ > 10000) {
+                throw new RuntimeException("可能由于子控件太多,或者宽高太大造成了死循环");
+            }
         }
     }
 }

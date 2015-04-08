@@ -14,7 +14,7 @@ import android.text.TextPaint;
  */
 public class TextDrawable extends Drawable {
     public static final int DEFAULT_TEXT_SIZE = 20;
-    public static final int DEFAULT_TEXT_COLOR = Color.rgb(0x78, 0x40, 0x35);
+    public static final int DEFAULT_TEXT_COLOR = Color.rgb(255, 254, 255);
     public static final float WIDTH2TEXT_SIZE = 0.8f;
 
     protected TextPaint strokePaint;

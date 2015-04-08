@@ -17,3 +17,6 @@ BogoCount,猴子数数,猴子数数游戏.
 #问题
 
 1.CardView 未实现
+2.子控件不重叠        已实现,需要优化
+3.animateSet
+4.onlayout 中 最后一个控件不显示. 原父类计算时超出布局了

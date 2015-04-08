@@ -14,6 +14,7 @@
 
         <com.fanhl.game.bogocount.widget.BogoView
             android:id="@+id/bogoView"
+            android:numColumns="auto_fit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

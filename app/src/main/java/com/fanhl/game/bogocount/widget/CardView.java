@@ -1,5 +1,8 @@
 package com.fanhl.game.bogocount.widget;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
@@ -14,9 +17,7 @@ import com.fanhl.game.bogocount.model.Card;
  * Created by fanhl on 15/4/7.
  */
 public class CardView extends View {
-    public static final int DIRECTION_FACE = 0;
-    public static final int DIRECTION_BACK = 1;
-
+    private static final String TAG = CardView.class.getSimpleName();
 
     TextDrawable textDrawable;
 
@@ -24,9 +25,6 @@ public class CardView extends View {
     private int height;
     private int mWidthMeasureSpec;
     private int mHeightMeasureSpec;
-
-
-    int direction = DIRECTION_FACE;
 
     Card data;
 
@@ -72,8 +70,10 @@ public class CardView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        textDrawable.setBounds(0, 0, width, height);
-        textDrawable.draw(canvas);
+        if (data != null && data.getType() == Card.TYPE_FORE) {
+            textDrawable.setBounds(0, 0, width, height);
+            textDrawable.draw(canvas);
+        }
     }
 
     public Card getData() {
@@ -83,5 +83,17 @@ public class CardView extends View {
     public void setData(Card data) {
         this.data = data;
         textDrawable.setData(String.valueOf(data.getValue()));
+    }
+
+    public void notifyDirectionChanged() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(this, "rotationY", 0, 360, 720).setDuration(400);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+               invalidate();
+            }
+        });
+
+        animator.start();
     }
 }
